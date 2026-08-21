@@ -1,0 +1,33 @@
+{
+  "name": "nyc-reporting-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -H localhost -p 3000",
+    "dev:clean": "rm -rf .next && next dev -H localhost -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "exifr": "^7.1.3",
+    "next": "^15.5.0",
+    "openai": "^5.12.2",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sharp": "^0.34.3",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.1",
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/node": "^20.19.10",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@types/uuid": "^10.0.0",
+    "eslint": "^9.33.0",
+    "eslint-config-next": "^15.5.0",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.9.2"
+  }
+}

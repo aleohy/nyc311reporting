@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="NYC Street Report">
+  <rect width="128" height="128" rx="28" fill="#0057b8"/>
+  <path d="M28 86h72v8H28z" fill="#ffffff" opacity="0.9"/>
+  <path d="M38 62c8-18 18-28 26-28s18 10 26 28" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="64" cy="44" r="10" fill="#ffffff"/>
+</svg>

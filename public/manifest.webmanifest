@@ -1,0 +1,17 @@
+{
+  "name": "NYC Street Report",
+  "short_name": "Street Report",
+  "description": "Photo-to-311 street reporting for New York City.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0057b8",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
