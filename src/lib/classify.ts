@@ -12,6 +12,7 @@ import {
   pickAlternativeCandidates,
 } from "@/lib/311-catalog";
 import { formatLocation, runCursorVisionPrompt } from "@/lib/cursor-api";
+import { runGeminiVisionPrompt } from "@/lib/gemini-vision";
 import { runOpenAiVisionPrompt } from "@/lib/openai-vision";
 import type { GeoPoint } from "@/types/report";
 
@@ -182,6 +183,16 @@ function parseDataUrl(imageDataUrl: string): { data: string; mimeType: string } 
   return { mimeType, data: match[2] };
 }
 
+async function classifyWithGemini(
+  imageDataUrl: string,
+  location: GeoPoint,
+  apiKey: string,
+  exclude: ComplaintLeafId[],
+): Promise<ClassificationResult> {
+  const result = await runGeminiVisionPrompt(apiKey, buildPrompt(location, exclude), imageDataUrl);
+  return parseClassification(result, true, exclude);
+}
+
 async function classifyWithOpenAi(
   imageDataUrl: string,
   location: GeoPoint,
@@ -222,8 +233,23 @@ export async function classifyStreetPhoto(
   location: GeoPoint,
   exclude: ComplaintLeafId[] = [],
 ): Promise<ClassificationResult> {
+  const geminiKey = process.env.GEMINI_API_KEY;
   const openaiKey = process.env.OPENAI_API_KEY;
   const cursorKey = process.env.CURSOR_API_KEY;
+
+  if (geminiKey) {
+    try {
+      return await runWithTimeout(() =>
+        classifyWithGemini(imageDataUrl, location, geminiKey, exclude),
+      );
+    } catch (error) {
+      const timedOut = error instanceof Error && error.message === "AI timeout";
+      console.error("Gemini classification failed:", error);
+      if (!openaiKey && !cursorKey) {
+        return fallbackClassification(timedOut, exclude);
+      }
+    }
+  }
 
   if (openaiKey) {
     try {
