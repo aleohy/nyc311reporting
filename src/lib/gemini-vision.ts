@@ -1,3 +1,10 @@
+const DEFAULT_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-lite",
+  "gemini-1.5-flash",
+];
+
 export async function runGeminiVisionPrompt(
   apiKey: string,
   prompt: string,
@@ -9,18 +16,45 @@ export async function runGeminiVisionPrompt(
   }
 
   const mimeType = match[1] === "image/jpg" ? "image/jpeg" : match[1];
-  const model = process.env.GEMINI_VISION_MODEL || "gemini-2.0-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const models = process.env.GEMINI_VISION_MODEL
+    ? [process.env.GEMINI_VISION_MODEL, ...DEFAULT_MODELS]
+    : DEFAULT_MODELS;
+
+  let lastError = "Gemini returned no usable response.";
+
+  for (const model of [...new Set(models)]) {
+    try {
+      return await generateWithModel(apiKey, model, prompt, mimeType, match[2]);
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
+      console.error(`Gemini model ${model} failed:`, lastError);
+    }
+  }
+
+  throw new Error(lastError);
+}
+
+async function generateWithModel(
+  apiKey: string,
+  model: string,
+  prompt: string,
+  mimeType: string,
+  data: string,
+): Promise<string> {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 
   const response = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": apiKey,
+    },
     body: JSON.stringify({
       contents: [
         {
           parts: [
             { text: prompt },
-            { inline_data: { mime_type: mimeType, data: match[2] } },
+            { inline_data: { mime_type: mimeType, data } },
           ],
         },
       ],
@@ -31,17 +65,17 @@ export async function runGeminiVisionPrompt(
     }),
   });
 
+  const detail = await response.text();
   if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`Gemini error (${response.status}): ${detail}`);
+    throw new Error(`Gemini ${model} (${response.status}): ${detail.slice(0, 400)}`);
   }
 
-  const payload = (await response.json()) as {
+  const payload = JSON.parse(detail) as {
     candidates?: { content?: { parts?: { text?: string }[] } }[];
   };
   const text = payload.candidates?.[0]?.content?.parts?.map((part) => part.text || "").join("").trim();
   if (!text) {
-    throw new Error("Gemini returned an empty classification response.");
+    throw new Error(`Gemini ${model} returned an empty classification response.`);
   }
 
   return text;
