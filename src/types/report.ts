@@ -85,6 +85,21 @@ export interface FeedbackEntry {
   createdAt: string;
 }
 
+export type UsageEventName =
+  | "page_view"
+  | "photo_uploaded"
+  | "category_chosen"
+  | "nyc311_opened"
+  | "feedback_received";
+
+export interface UsageEvent {
+  id: string;
+  name: UsageEventName;
+  createdAt: string;
+  path?: string;
+  leafId?: ComplaintLeafId;
+}
+
 export interface ReportDraft {
   id: string;
   /** Selected 311 complaint leaf */
