@@ -1,12 +1,13 @@
 import fs from "fs/promises";
 import path from "path";
 
-import type { FeedbackEntry, ReportDraft, StoredReport } from "@/types/report";
+import type { FeedbackEntry, ReportDraft, StoredReport, UsageEvent } from "@/types/report";
 
 const DATA_DIR = path.join(process.cwd(), "data");
 const REPORTS_FILE = path.join(DATA_DIR, "reports.json");
 const DRAFTS_FILE = path.join(DATA_DIR, "drafts.json");
 const FEEDBACK_FILE = path.join(DATA_DIR, "feedback.json");
+const EVENTS_FILE = path.join(DATA_DIR, "events.json");
 
 async function ensureDataDir(): Promise<void> {
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -90,6 +91,19 @@ export async function saveFeedback(entry: FeedbackEntry): Promise<void> {
   const entries = await readFeedback();
   entries.unshift(entry);
   await fs.writeFile(FEEDBACK_FILE, JSON.stringify(entries.slice(0, 1000), null, 2), "utf8");
+}
+
+export async function readEvents(): Promise<UsageEvent[]> {
+  await ensureJsonFile(EVENTS_FILE);
+  const raw = await fs.readFile(EVENTS_FILE, "utf8");
+  return JSON.parse(raw) as UsageEvent[];
+}
+
+export async function saveEvent(event: UsageEvent): Promise<void> {
+  await ensureJsonFile(EVENTS_FILE);
+  const events = await readEvents();
+  events.unshift(event);
+  await fs.writeFile(EVENTS_FILE, JSON.stringify(events.slice(0, 5000), null, 2), "utf8");
 }
 
 export async function updateDraft(
