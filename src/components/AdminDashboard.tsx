@@ -66,4 +66,4 @@ export function AdminDashboard() {
     if (!response.ok) {
       throw new Error("Unable to load admin data.");
     }
-    const payload = (await response.json()) as
+    const payload: OverviewPayload = await response.json();
