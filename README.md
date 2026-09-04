@@ -1,167 +1,81 @@
-NYC Street Report
+# TLDR
 
-A volunteer-built helper for New Yorkers filing illegal parking complaints on the official NYC311 form.
+**Take a photo of illegal parking, confirm the NYC311 category, copy the text into the city’s form.** This tool cannot file the complaint for you. We have requested the city’s partner API for that; until they approve it, you still submit on NYC311.
+
+**Use the app: [https://nyc311reporting.vercel.app/](https://nyc311reporting.vercel.app/)**
+
+# NYC Street Report
+
+A volunteer-built helper for New Yorkers filing **illegal parking** complaints on the official [NYC311](https://portal.311.nyc.gov/) form.
 
 Photograph the vehicle, confirm the city’s complaint category, then copy a prepared description into NYC311.
 
-Not affiliated with the City of New York.
+**Not affiliated with the City of New York.**
 
-Use the product: https://nyc311reporting.vercel.app/
+## Use the product
 
-Direct submission
+**https://nyc311reporting.vercel.app/**
 
-This tool does not submit the complaint to 311 for you. There is no public city API that lets a website file a 311 request on someone’s behalf.
+## Direct submission
+
+This tool **does not submit the complaint to 311 for you**. There is no public city API that lets a website file a 311 request on someone’s behalf.
 
 We have requested NYC’s partner / write API. If the city approves it, we can add one-tap filing. Until then, you copy the prepared packet into the official NYC311 form and submit there.
 
-What it does
+## What it does
 
+1. **Upload a photo** of the parked vehicle (plate, sign or curb marking, and enough context to show the violation).
+2. **Pick the 311 category** the app suggests (hydrant, sidewalk, bike lane, and so on).
+3. **Copy the packet** into the official NYC311 form and submit there.
 
-
-
-
-Upload a photo of the parked vehicle (plate, sign or curb marking, and enough context to show the violation).
-
-
-
-Pick the 311 category the app suggests (hydrant, sidewalk, bike lane, and so on).
-
-
-
-Copy the packet into the official NYC311 form and submit there.
-
-There is also Track 311 (lookup an existing request) and a Feedback form.
+There is also **Track 311** (lookup an existing request) and a **Feedback** form.
 
 Illegal parking only, for now. The tool is in beta.
 
-Why it exists
+## Why it exists
 
 NYC311 has dozens of parking categories. Neighbors who want to report a real hazard often give up before they finish the form. This app is meant to cut that friction so safety issues get reported.
 
-Run it locally
+## Run it locally
 
 You need Node.js 20+.
 
+```bash
 npm install
 cp .env.example .env.local
 npm run dev
+```
 
-Open http://localhost:3000.
+Open [http://localhost:3000](http://localhost:3000).
 
-On your machine, drafts and feedback are saved as JSON files under data/ (that folder is gitignored). On Vercel, set the Upstash Redis variables from .env.example so data is not written to a disposable disk.
+On your machine, drafts and feedback are saved as JSON files under `data/` (that folder is gitignored). On Vercel, set the Upstash Redis variables from `.env.example` so data is not written to a disposable disk.
 
-Environment variables
+## Environment variables
 
-Copy .env.example and fill in what you use. The important ones:
+Copy `.env.example` and fill in what you use:
 
+- `GEMINI_API_KEY` — photo to category suggestions (Google AI Studio)
+- `OPENAI_API_KEY` — optional vision fallback
+- `CURSOR_API_KEY` — optional vision fallback
+- `NYC_311_API_KEY` — optional status lookup on Track 311
+- `VOLUNTEER_PASSWORD` — private operator login (not a public page)
+- `ADMIN_EMAIL` and `RESEND_API_KEY` — optional email when someone sends Feedback
+- `KV_REST_API_URL` and `KV_REST_API_TOKEN` — Redis on Vercel (leave empty locally)
 
+Do not commit `.env.local` or API keys.
 
+## Stack
 
+- [Next.js](https://nextjs.org/) (App Router) and TypeScript
+- NYC Open Data for nearby 311 requests
+- Gemini (or optional OpenAI / Cursor) for photo classification
 
+## Contributing
 
-
-Variable
-
-
-
-Purpose
-
-
-
-
-
-GEMINI_API_KEY
-
-
-
-Photo → category suggestions (Google AI Studio)
-
-
-
-
-
-OPENAI_API_KEY
-
-
-
-Optional vision fallback
-
-
-
-
-
-CURSOR_API_KEY
-
-
-
-Optional vision fallback
-
-
-
-
-
-NYC_311_API_KEY
-
-
-
-Optional status lookup on Track 311
-
-
-
-
-
-VOLUNTEER_PASSWORD
-
-
-
-Private operator login (not a public page)
-
-
-
-
-
-ADMIN_EMAIL / RESEND_API_KEY
-
-
-
-Optional email when someone sends Feedback
-
-
-
-
-
-KV_REST_API_URL / KV_REST_API_TOKEN
-
-
-
-Redis on Vercel (leave empty locally)
-
-Do not commit .env.local or API keys.
-
-Stack
-
-
-
-
-
-Next.js (App Router) and TypeScript
-
-
-
-NYC Open Data for nearby 311 requests
-
-
-
-Gemini (or optional OpenAI / Cursor) for photo classification
-
-
-
-Contributing
-
-This is volunteer-run. If something is confusing, broken, or missing, use the Feedback tab on the live site, or open a GitHub issue.
+This is volunteer-run. If something is confusing, broken, or missing, use the **Feedback** tab on the live site, or open a GitHub issue.
 
 Please do not open pull requests that add live filing to 311 until that city API is approved.
 
-License
+## License
 
 No license file yet. Ask before you reuse this commercially.
